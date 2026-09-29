@@ -1,6 +1,6 @@
 ---
-title: "How Much Worse Have Toronto Drivers Become?^[Code and data supporting this analysis is available at: https://github.com/BolongTang/Traffic_Tickets]"
-subtitle: "Investigating a Decade Worth of Issued Traffic Tickets in Toronto"
+title: "Are Toronto Drivers Becoming Worse, and What Can Be Done?^[Code and data supporting this analysis is available at: https://github.com/BolongTang/Traffic_Tickets]"
+subtitle: "Applicable Conclusions Drawn From a Decade Worth of Issued Traffic Tickets in Toronto"
 author: "Bolong Tang"
 date: "28 September 2026"
 date-format: "D MMMM YYYY"
@@ -12,7 +12,7 @@ execute:
   warning: false
   message: false
 abstract: |
-    Although, according to aggregate data from the police, Toronto drivers have received growing number of tickets in recent years, detailed data reveal that those increases have concentrated on certain categories of offenses, and occurred alongside a recent increase in active enforcement intensity. Using twelve years of ticket-level data from the Toronto Police Service, this paper separates the two contributing factors. We find that aggressive driving reached all-time highs in 2024 and 2025, while speeding has fallen back toward pre-pandemic levels after a sharp rise during COVID-19. Furthermore, we have found bad driving to have especially manifested in specific neighborhoods of the city. This paper thus puts the increase in tickets in the context of enforcement and envisions structural changes to specific parts of the city to discourage bad driving behaviors.
+    Although, according to aggregate data from the police, Toronto drivers have received growing number of tickets in recent years, detailed data reveal that those increases have concentrated on certain categories of behavioral offenses, and occurred alongside a recent increase in active enforcement intensity. Using twelve years of ticket-level data from the Toronto Police Service, this paper separates the two contributing factors. We find that aggressive and distracted driving tickets reached all-time highs in 2024 and 2025, partially due to significant heightened enforcement intensity, while speeding has fallen back toward pre-pandemic levels after a sharp rise during COVID-19. Furthermore, we have found bad driving to have especially manifested in specific neighborhoods of the city. This paper thus puts the increase in tickets in the context of enforcement and envisions structural changes to specific parts of the city to discourage bad driving behaviors.
 
 ---
 
@@ -30,21 +30,21 @@ analysis_data <- read_csv("../data/03-analysis_data/analysis_data.csv")
 
 ## Introduction
 
-Complaints about aggressive and distracted driving are a fixture of Toronto news coverage, and the city's traffic ticket totals have risen to a twelve-year high in the past two years. It is tempting to read that rise as evidence that driving in Toronto is simply getting worse. But a ticket is not a direct measurement of bad driving -- it is the product of a driver's behaviour and the amount and kind of enforcement directed at that behaviour, and the two are easy to conflate. 
+Complaints about aggressive and distracted driving are a fixture of Toronto news coverage, and the city's traffic ticket totals have risen to a twelve-year high in the past two years. However, those news usually stop with aggregated ticket counts and provide little insight on why and how those increases happen. In reality, apart from genuine behavioral degradation among Toronto drivers, many other factors such as police enforcement intensity, the presence of surveillance cameras (or the lack thereof), the amount of cars on the road during a specific period of time, and specific road designs, may also contribute to that increase. 
 
-This paper uses twelve years (2014-2025) of tickets issued by the Toronto Police Service to ask three questions: is driving behaviour in Toronto actually getting worse; if so, what does the pattern look like across offence types and neighbourhoods; and what, if anything, does that pattern suggest about why. The approach taken here is to treat different offence categories as carrying different amounts of enforcement-driven noise. Categories like Document Violations or Equipment Violations largely reflect how proactively police are checking vehicles, while categories like Aggressive Driving and Distracted Driving are closer to a direct record of how someone was driving at the moment they were stopped. Comparing how these different categories have moved over time, and where, offers a more honest answer than the total ticket count alone.
+This paper wishes to break down what "bad driving" implies by analyzing trends when annual data are broken down into specific categories. It uses twelve years (2014-2025) of tickets issued by the Toronto Police Service to ask three questions: 1. is driving behaviour in Toronto actually getting worse? 2. if so, what does the pattern look like across offence types and neighbourhoods? and 3. what, if anything, does that pattern suggest about why? And its answers are: 1. The answer seems to be yes overall, even compared to pre-pandemic levels, but law enforcement intensity has significantly contributed to the growth in the amount of tickets issued. 2. Aggressive driving, document violations, and speeding have consistently remained the top offence types, each with ticket amounts far above any other category, and one should especially be aware of speeding in West Humber-Clairville and aggressive driving in Wellington Place. 3. The pattern suggests that the amount of highways, geography, and enforcement intensity have shaped the patterns significantly, but further research may be done in the future with more kinds of normalization (such as neighborhood land size, vehicle registration amount, etc.) to account for size differences in raw data. 
 
-The gap this paper addresses is that public discussion of Toronto traffic enforcement typically cites the total number of tickets issued in a given year, without asking whether that total is driven by behaviour, by enforcement intensity, or by both. Separating these is not just a statistical nicety: the appropriate policy response to more unsafe driving (traffic calming, road redesign) is different from the appropriate response to more proactive enforcement of existing behaviour (nothing need change) or to a data-reporting artifact (fix the data).
+Understanding the patterns of bad driving not only informs individuals of what behaviors they should actually look out for, or which neighborhoods' roads to avoid, but also provides policy makers valuable evidence which may support the implementation of strategic measures to reduce the amount of bad driving effectively.
 
-The remainder of the paper is organized as follows. @sec-data describes the dataset -- its source, how a traffic stop becomes a row in the data, and the variables it contains. @sec-results presents the paper's central findings: how total ticket volume and its offence-category composition have changed over time, and where in the city those changes are concentrated. Aggressive Driving tickets, for example, rose from a pre-2023 ceiling of roughly 59,000 per year to 88,255 in 2025 alone, while Speeding tickets fell from their pandemic-era peak of over 103,000 in 2020-2021 back to roughly 60,000 by 2025 -- a divergence that would be invisible in the total ticket count alone. @sec-discussion summarizes what these patterns suggest and discusses the analysis's limitations.
+The remainder of the paper is organized as follows. @sec-data describes the dataset -- its source, how a traffic stop becomes a row in the data, and the variables it contains. @sec-results presents the paper's central findings: how total ticket volume and its offence-category composition have changed over time, and where in the city those changes are concentrated.@sec-discussion summarizes what these patterns suggest and discusses the analysis's limitations.
 
 ## Data {#sec-data}
 
 ### Source and context
 
-The data used in this paper are published by the Toronto Police Service as the *Police Annual Statistical Report -- Tickets Issued* dataset, accessed through the City of Toronto's Open Data Portal via the `opendatatoronto` package [@opendatatoronto] on the Open Data Portal [@tpsdata]. Each row of the published dataset already represents a count of tickets (`TICKET_COUNT`) sharing the same combination of offence year, police division, ticket type, offence category, driver age group, and neighbourhood, rather than one row per individual ticket. All analysis in this paper is therefore weighted by `TICKET_COUNT`; a naive count of rows would badly understate ticket volume and distort every trend reported below.
+The data used in this paper are published by the Toronto Police Service as the *Police Annual Statistical Report -- Tickets Issued* dataset, accessed through the City of Toronto's Open Data Portal via the `opendatatoronto` package [@opendatatoronto] on the Open Data Portal [@tpsdata]. Each row of the published dataset already represents a count of tickets (`TICKET_COUNT`) sharing the same combination of offence year, police division, ticket type, offence category, driver age group, and neighbourhood, rather than one row per individual ticket. All analysis in this paper is therefore sums the `TICKET_COUNT` over rows under scrutiny. 
 
-The Toronto Police Service also publishes datasets on traffic collisions and on major crime indicators. A traffic collision dataset was considered as an alternative for this paper, since collisions arguably measure driving *outcomes* more directly than tickets measure driving *behaviour*. It was not used here because collision counts are themselves confounded by traffic volume (fewer cars on the road mechanically produces fewer collisions, independent of how any individual is driving) and because a ticket-level breakdown by specific offence type -- speeding versus aggressive versus distracted driving -- offers a more granular view of *what kind* of unsafe driving is changing, which is this paper's central interest.
+The Toronto Police Service also publishes datasets on traffic collisions and on major crime indicators. A traffic collision dataset was considered as an alternative for this paper, since collisions arguably measure driving outcomes more directly than tickets measure driving behaviour. It was not used here because collision counts are themselves confounded by traffic volume (fewer cars on the road mechanically produces fewer collisions, independent of how any individual is driving) and because a ticket-level breakdown by specific offence type -- speeding versus aggressive versus distracted driving -- offers a more granular view of what kind of unsafe driving is changing, which is this paper's central interest.
 
 Data of this kind raise an ethical consideration worth stating plainly: enforcement data reflect where police choose to look as much as where unsafe driving occurs. A rise in tickets in a given division could reflect a genuine change in driver behaviour there, a change in policing priorities, or both, and this paper is careful throughout to distinguish claims about ticketing from claims about driving.
 
@@ -56,13 +56,13 @@ Each row in this dataset represents a step removed from an actual driving incide
 
 This measurement process means that a "tickets issued" count is shaped by several factors besides driver behaviour: how many officers are on patrol, whether an automated enforcement camera is active on a given stretch of road, and administrative decisions about which offences to prioritize in a given year. A large share of tickets in this dataset are also recorded with no resolved neighbourhood (`HOOD_158 == "NSA"`), most plausibly because they originate from highway or camera-based enforcement not tied to a specific division; this paper treats that share as itself informative about enforcement intensity, rather than discarding it (@sec-nsa).
 
-A further measurement concern specific to a twelve-year span is whether the eight offence-category labels mean the same thing throughout. The Toronto Police Service does not publish a change log alongside this dataset, so it is not possible to confirm from the data alone whether, for example, "Aggressive Driving" was defined identically in 2014 and in 2025, or whether an offence that would once have been classified as "Other HTA" might now be classified as "Moving Violations." This paper treats the eight category labels as stable over time, as the published documentation gives no indication otherwise, but this assumption cannot be fully verified and is revisited as a limitation in @sec-discussion.
+A further measurement concern specific to a twelve-year span is whether the eight offence-category labels mean the same thing throughout. The Toronto Police Service does not publish a change log alongside this dataset, so it is not possible to confirm from the data alone whether, for example, "Aggressive Driving" was defined identically in 2014 and in 2025, or whether an offence that would once have been classified as "Other HTA" might now be classified as "Moving Violations." This paper treats the eight category labels as stable over time, as the published documentation gives no indication otherwise. However, this assumption cannot be fully verified and is revisited as a limitation in @sec-discussion.
 
 ### Analysis data
 
 The dataset used in this paper contains `r comma(nrow(analysis_data))` rows spanning `r min(analysis_data$offence_year)` to `r max(analysis_data$offence_year)`, with a total of `r comma(sum(analysis_data$ticket_count))` tickets recorded. Each row carries ten original variables -- `offence_year`, `division` (one of 16 Toronto Police Service divisions, or "NSA"), `ticket_type` (Part I notice or Part III summons), `offence_category` (one of eight Highway Traffic Act offence groupings, from Aggressive Driving to Document Violations), `age_group`, `hood_158` and `neighbourhood_158` (the ticket's Toronto neighbourhood, using the City's 158-neighbourhood system), and `ticket_count` -- plus two variables constructed for this analysis, `offence_group` and `period`, detailed in @sec-appendix-cleaning.
 
-@fig-ticket-count-distribution shows the distribution of `ticket_count` itself: most rows represent a small number of tickets, but a long right tail of rows represents hundreds or thousands of tickets issued under a single combination of year, division, category, and neighbourhood. Summary statistics for this distribution are given in @tbl-ticket-count-summary (@sec-appendix-summary). The distribution of tickets across the dataset's remaining categorical variables is given below.
+@fig-ticket-count-distribution shows the distribution of `ticket_count` itself: most rows represent a small number of tickets, but a long right tail of rows represents hundreds or thousands of tickets issued under a single combination of year, division, category, and neighbourhood. Summary statistics for this distribution are given in @tbl-ticket-count-summary (appendix). The distribution of tickets across the dataset's remaining categorical variables is given below.
 
 ```{r}
 #| label: fig-ticket-count-distribution
@@ -77,7 +77,7 @@ analysis_data |>
   theme_minimal(base_size = 11)
 ```
 
-@fig-category-overview, @fig-division-overview, and @fig-tickettype-overview give the total raw distribution of tickets across the dataset's other categorical variables of interest, summed over all twelve years, before any of the year-by-year breakdowns in @sec-results. (`neighbourhood_158` has 158 possible values and so is examined in @sec-results only for the subset of neighbourhoods most relevant to the paper's argument, rather than shown here in full.)
+@fig-category-overview, @fig-division-overview, and @fig-tickettype-overview (appendix) give the total raw distribution of tickets across the dataset's other categorical variables of interest, summed over all twelve years, before any of the year-by-year breakdowns in @sec-results. (`neighbourhood_158` has 158 possible values and so is examined in @sec-results only for the subset of neighbourhoods most relevant to the paper's argument, rather than shown here in full.)
 
 ```{r}
 #| label: fig-category-overview
@@ -107,15 +107,11 @@ analysis_data |>
   theme_minimal(base_size = 11)
 ```
 
-
-
-
-
 ## Results {#sec-results}
 
 ### Ticket volume, 2014-2025
 
-Total tickets issued by year are shown in @fig-yearly-totals. Volume climbed from `r comma(sum(analysis_data$ticket_count[analysis_data$offence_year == 2014]))` in 2014 to a twelve-year high of `r comma(sum(analysis_data$ticket_count[analysis_data$offence_year == 2025]))` in 2025, but the trend is not steady: it dipped in 2018-2019, spiked during the pandemic years of 2020-2021, and rose again sharply from 2023 onward.
+Total tickets issued by year are shown in @fig-yearly-totals, which does echo the sentiment expounded by medias and individual accounts online, that many more tickets are being issued in recent years. Volume climbed from `r comma(sum(analysis_data$ticket_count[analysis_data$offence_year == 2014]))` in 2014 to a twelve-year high of `r comma(sum(analysis_data$ticket_count[analysis_data$offence_year == 2025]))` in 2025, but the trend is not steady: it dipped in 2018-2019, spiked during the pandemic years of 2020-2021, and rose again sharply from 2023 onward.
 
 ```{r}
 #| label: fig-yearly-totals
@@ -158,7 +154,7 @@ analysis_data |>
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-Breaking the behavioural group into its four individual categories (@fig-category-trends) shows that this is not a uniform story. Speeding rose sharply during 2020-2021 and has since declined toward its pre-pandemic range -- consistent with published findings that empty roads during pandemic lockdowns produced a temporary rise in speeding that has partly, but not fully, reversed since [@Stiles2023; @Wang2023]. Aggressive Driving and Distracted Driving, by contrast, show no comparable pandemic spike and are instead at their highest recorded levels in 2024 and 2025, well above any pre-pandemic year.
+Breaking the behavioural group into its four individual categories (@fig-category-trends) shows that ticketing rises are not uniform. Speeding rose sharply during 2020-2021 and has since declined toward its pre-pandemic range -- consistent with published findings that empty roads during pandemic lockdowns produced a temporary rise in speeding that has partly, but not fully, reversed since [@Stiles2023; @Wang2023]. Aggressive Driving and Distracted Driving, by contrast, show no comparable pandemic spike and are instead at their highest recorded levels in 2024 and 2025, well above any pre-pandemic year (note that the y scale is logged).
 
 ```{r}
 #| label: fig-category-trends
@@ -212,7 +208,7 @@ analysis_data |>
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-For tickets that do have a resolved division, growth between 2014-2019 and 2022-2025 was uneven (@tbl-division-change): divisions covering Toronto's outer suburbs grew the most, while several central divisions saw behavioural tickets decline over the same period.
+For tickets that do have a resolved division, growth between 2014-2019 and 2022-2025 was uneven (@tbl-division-change): divisions covering Toronto's outer suburbs grew the most (ex. D41 FOCUS Scarborough, D23 FOCUS Rexdale north and D22 south), while several central divisions saw behavioural tickets decline over the same period (ex. D13 and D53 FOCUS York, D31 and D33 FOCUS York).
 
 ```{r}
 #| label: tbl-division-change
@@ -236,7 +232,7 @@ analysis_data |>
   tt(escape = TRUE)
 ```
 
-The ten neighbourhoods with the most behavioural tickets in 2022-2025 further split into two distinct profiles (@fig-top10-mix): outer-suburban, arterial-road neighbourhoods where speeding dominates, and dense downtown neighbourhoods where aggressive driving dominates -- consistent with a road-design explanation (wide, high-speed-limit suburban roads inviting speeding; congested downtown streets inviting aggressive manoeuvres) rather than a single, citywide behavioural shift.
+The ten neighbourhoods with the most behavioural tickets in 2022-2025 further split into two distinct profiles (@fig-top10-mix): outer-suburban, arterial-road neighbourhoods where speeding dominates, and dense downtown neighbourhoods where aggressive driving dominates -- consistent with a road-design explanation (wide, high-speed-limit suburban roads inviting speeding; congested downtown streets inviting aggressive manoeuvres) rather than a single, citywide behavioural shift. Specifically, since West Humber-Clairville is surrounded by several highways and has a low residential density due to its proximity to the airport and warehouses, it is reasonable that it has a disproportionate high amount of speeding and aggressive driving tickets; and since Welling Place is part of the Old Toronto near the port and thus has a denser population and thinner roads, it is reasonable to see a high percentage of aggressive driving behaviors amidst slow traffic, similar to the pattern observed in Yonge-Bay Corridor, which includes the Union Station area. 
 
 ```{r}
 #| label: fig-top10-mix
@@ -278,7 +274,7 @@ Total traffic tickets in Toronto reached a twelve-year high in 2024-2025, but th
 
 ### Limitations
 
-This analysis has several limitations. First, and most fundamentally, ticket counts measure the product of driver behaviour *and* enforcement intensity, and this dataset provides no direct way to separate the two; the behavioural/administrative split used throughout is a reasonable proxy, not a clean decomposition. Second, a substantial and non-constant share of tickets (@sec-nsa) cannot be tied to a specific neighbourhood, which limits how precisely the geographic findings in this paper can be interpreted, particularly for 2024-2025, where that share has risen again. Third, this dataset contains no measure of traffic volume or exposure (how many vehicles travel through a given neighbourhood), so a rise in tickets in a given area cannot be fully distinguished from a rise in the number of vehicles passing through it. Fourth, as noted in @sec-data, this paper assumes the eight offence-category definitions are stable across 2014-2025; no change log is published alongside the data to confirm this, and a definitional change partway through the period could produce an apparent trend, such as the rise in Aggressive Driving, that is partly or wholly an artifact of reclassification rather than a change in driving behaviour. Finally, this paper draws on ticket counts alone; combining this data with collision severity data and neighbourhood-level road design or socio-economic characteristics, as suggested by related work on pandemic-era driving behaviour [@Stiles2023], would allow a more complete account of why specific behaviours are concentrating where they are.
+This analysis has several limitations. First, and most fundamentally, ticket counts measure both the product of driver behaviour and enforcement intensity, and this dataset provides no direct way to separate the two; the behavioural/administrative distinction is a reasonable proxy, not a clean decomposition. Second, a substantial and non-constant share of tickets (@sec-nsa) cannot be tied to a specific neighbourhood, which limits how precisely the geographic findings in this paper can be interpreted, particularly for 2024-2025, where that share has risen again. Third, this dataset contains no measure of traffic volume or exposure (how many vehicles travel through a given neighbourhood), so a rise in tickets in a given area cannot be fully distinguished from a rise in the number of vehicles passing through it. Fourth, as noted in @sec-data, this paper assumes the eight offence-category definitions are stable across 2014-2025; no change log is published alongside the data to confirm this, and a definitional change partway through the period could produce an apparent trend, such as the rise in Aggressive Driving, that is partly or wholly an artifact of reclassification rather than a change in driving behaviour. Finally, this paper draws on ticket counts alone; combining this data with collision severity data and neighbourhood-level road design or socio-economic characteristics, as suggested by related work on pandemic-era driving behaviour [@Stiles2023], would allow a more complete account of why specific behaviours are concentrating where they are.
 
 \newpage
 
@@ -291,7 +287,11 @@ This analysis has several limitations. First, and most fundamentally, ticket cou
 
 ## Appendix {.unnumbered}
 
-# Summary statistics for ticket count {#sec-appendix-summary .unnumbered}
+### Data cleaning {#sec-appendix-cleaning}
+
+The raw dataset required minimal cleaning: no missing values or duplicate rows were present. `ticket_type` values carried long trailing whitespace in the raw export, which was trimmed and recoded to two short labels ("Part I notice" and "Part III summons"). Two variables were constructed for this analysis: `offence_group`, which splits the eight offence categories into "Behavioural" (Aggressive Driving, Speeding, Distracted Driving, Moving Violations) and "Administrative" (all others); and `period`, which groups years into `pre_2020` (2014-2019), `2020_2021` (excluded from before/after comparisons as a pandemic-affected transition), and `post_2021` (2022-2025). A `has_neighbourhood` flag marks rows where `hood_158` could not be resolved to a specific neighbourhood ("NSA"); these rows were retained throughout rather than dropped, since excluding them would understate total ticket volume, but they are excluded from any neighbourhood-level breakdown.
+
+### Summary statistics for ticket count {#sec-appendix-summary .unnumbered}
 
 ```{r}
 #| label: tbl-ticket-count-summary
@@ -310,7 +310,7 @@ analysis_data |>
   tt()
 ```
 
-# Total tickets issued by ticket type
+### Total tickets issued by ticket type
 
 ```{r}
 #| label: fig-tickettype-overview
@@ -347,7 +347,3 @@ analysis_data |>
   ) |>
   tt(escape = TRUE)
 ```
-
-### Data cleaning {#sec-appendix-cleaning .unnumbered}
-
-The raw dataset required minimal cleaning: no missing values or duplicate rows were present. `ticket_type` values carried long trailing whitespace in the raw export, which was trimmed and recoded to two short labels ("Part I notice" and "Part III summons"). Two variables were constructed for this analysis: `offence_group`, which splits the eight offence categories into "Behavioural" (Aggressive Driving, Speeding, Distracted Driving, Moving Violations) and "Administrative" (all others); and `period`, which groups years into `pre_2020` (2014-2019), `2020_2021` (excluded from before/after comparisons as a pandemic-affected transition), and `post_2021` (2022-2025). A `has_neighbourhood` flag marks rows where `hood_158` could not be resolved to a specific neighbourhood ("NSA"); these rows were retained throughout rather than dropped, since excluding them would understate total ticket volume, but they are excluded from any neighbourhood-level breakdown.
