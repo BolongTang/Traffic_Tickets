@@ -1,9 +1,8 @@
 #### Preamble ####
 # Purpose: Tests the structure and validity of the simulated Toronto
 #   traffic tickets dataset, using the `testthat` package.
-# Author: Bolong
+# Author: Bolong Tang
 # Date: 28 September 2026
-# Contact: [add email]
 # License: MIT
 # Pre-requisites:
   # - The `tidyverse` and `testthat` packages must be installed and loaded
@@ -129,3 +128,4 @@ test_that("NSA has a higher Speeding share than other divisions, as simulated", 
 
   expect_gt(nsa_share, other_share)
 })
+

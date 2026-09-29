@@ -4,9 +4,8 @@
 #   constructed variables (a behavioural/administrative offence grouping
 #   and a pre-/post-pandemic period flag) that are used throughout the
 #   paper's data and results sections.
-# Author: Bolong
+# Author: Bolong Tang
 # Date: 28 September 2026
-# Contact: [add email]
 # License: MIT
 # Pre-requisites:
   # - The `tidyverse` package must be installed and loaded

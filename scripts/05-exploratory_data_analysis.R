@@ -9,9 +9,8 @@
 #   the multi-category line plot distinguishes categories by shape and
 #   linetype rather than colour, and both stacked/segmented bar plots
 #   use a grayscale gradient fill rather than arbitrary hues.
-# Author: Bolong
+# Author: Bolong Tang
 # Date: 28 September 2026
-# Contact: [add email]
 # License: MIT
 # Pre-requisites:
   # - The `tidyverse`, `tinytable`, and `scales` packages must be
@@ -357,3 +356,4 @@ ggsave(
   fig_age_share,
   width = 7, height = 4, dpi = 300
 )
+

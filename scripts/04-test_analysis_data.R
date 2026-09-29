@@ -3,9 +3,8 @@
 #   traffic tickets analysis dataset, including the correctness of the
 #   variables constructed in 03-clean_data.R, using the `testthat`
 #   package.
-# Author: Bolong
+# Author: Bolong Tang
 # Date: 28 September 2026
-# Contact: [add email]
 # License: MIT
 # Pre-requisites:
   # - The `tidyverse` and `testthat` packages must be installed and loaded
@@ -140,3 +139,4 @@ test_that("'hood_158' and 'neighbourhood_158' map 1-to-1", {
   expect_equal(n_distinct(hood_map$hood_158), nrow(hood_map))
   expect_equal(n_distinct(hood_map$neighbourhood_158), nrow(hood_map))
 })
+

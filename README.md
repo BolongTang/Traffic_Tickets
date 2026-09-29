@@ -71,18 +71,4 @@ Issued*, City of Toronto Open Data Portal, accessed via the
 
 ## Statement on LLM usage
 
-**TODO -- fill in before submitting.** The rubric requires this be filled in
-truthfully and specifically: whether autocomplete-style tools (e.g.
-Copilot) were used in the code, and whether a chat-based LLM (e.g. this
-conversation) was used -- and if so, the full chat history must be included
-in `other/llm/usage.txt`. A starting point, to edit so it accurately
-reflects what was and wasn't used:
-
-> Aspects of the code and this paper were developed with the help of
-> Claude (Anthropic). The full chat history is available in
-> `other/llm/usage.txt`.
-
-To produce `other/llm/usage.txt`, export this conversation (check Claude's
-export/download options for the chat) and save the full text there. I
-can't generate that export file myself from within this session -- it
-needs to come from your own copy of the conversation.
+The majority of the reproducible pipeline, plots, and texts were developed or written with the help of Claude Sonnet 5 (Anthropic). The aspects of traffic tickets worth analyzing were suggested by Claude but decided by the author. The full chat history is available in `other/llm/usage.txt`.

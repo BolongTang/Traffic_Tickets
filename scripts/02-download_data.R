@@ -2,9 +2,8 @@
 # Purpose: Download the Traffic Tickets Issued dataset from the City of
 #   Toronto's Open Data Portal, using opendatatoronto (Gelfand 2022), and
 #   save an unedited copy for downstream cleaning.
-# Author: Bolong
+# Author: Bolong Tang
 # Date: 28 September 2026
-# Contact: [add email]
 # License: MIT
 # Pre-requisites: install.packages("opendatatoronto"); install.packages("tidyverse")
 # Any other information needed? Requires an internet connection.

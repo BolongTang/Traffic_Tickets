@@ -4,9 +4,8 @@
 #   neighbourhood type, offence category, ticket type, and ticket count,
 #   so the download/cleaning pipeline can be developed and tested before
 #   the real data is pulled.
-# Author: Bolong
+# Author: Bolong Tang
 # Date: 28 September 2026
-# Contact: [add email]
 # License: MIT
 # Pre-requisites: none
 # Any other information needed? None.
