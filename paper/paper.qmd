@@ -1,6 +1,6 @@
 ---
-title: "Speeding Down, Aggression Up: What a Decade of Toronto Traffic Tickets Says About Driving in the City"
-subtitle: "Enforcement data show driving behaviour has not uniformly worsened since 2014, but aggressive and distracted driving have reached record highs concentrated in a shrinking set of neighbourhoods^[Code and data supporting this analysis is available at: https://github.com/BolongTang/Traffic_Tickets]"
+title: "Are Toronto Drivers Getting Worse? Traffic Tickets Records Reveal Otherwise^[Code and data supporting this analysis is available at: https://github.com/BolongTang/Traffic_Tickets]"
+subtitle: "Investigating a Decade Worth of Issued Traffic Tickets in Toronto"
 author: "Bolong Tang"
 date: "28 September 2026"
 date-format: "D MMMM YYYY"
@@ -12,7 +12,7 @@ execute:
   warning: false
   message: false
 abstract: |
-  Whether driving in Toronto is getting worse is difficult to answer from raw enforcement totals alone, because ticket counts mix genuine changes in driver behaviour with changes in how much police enforce. Using twelve years of ticket-level data from the Toronto Police Service, this paper separates the two by tracking offence categories least distorted by enforcement swings. We find that aggressive and distracted driving reached all-time highs in 2024 and 2025, while speeding -- the more intuitive marker of unsafe driving -- has fallen back toward pre-pandemic levels after a sharp rise during COVID-19. This tells us that "bad driving" in Toronto has not worsened uniformly; instead, specific driving behaviours are worsening in specific, increasingly concentrated parts of the city.
+  Whether driving in Toronto is getting worse is difficult to answer from raw enforcement totals alone, because ticket counts mix genuine changes in driver behaviour with changes in how much police enforce. Using twelve years of ticket-level data from the Toronto Police Service, this paper separates the two by tracking offence categories least distorted by enforcement swings. We find that aggressive driving reached all-time highs in 2024 and 2025, while speeding -- the more intuitive marker of unsafe driving -- has fallen back toward pre-pandemic levels after a sharp rise during COVID-19. "Bad driving" in Toronto, instead of worsening uniformly, has instead manifested in specific driving behaviours in specific, concentrated parts of the city.
 ---
 
 ```{r}
@@ -27,7 +27,7 @@ options(tinytable_tt_escape = TRUE)
 analysis_data <- read_csv("../data/03-analysis_data/analysis_data.csv")
 ```
 
-# Introduction
+## Introduction
 
 Complaints about aggressive and distracted driving are a fixture of Toronto news coverage, and the city's traffic ticket totals have risen to a twelve-year high in the past two years. It is tempting to read that rise as evidence that driving in Toronto is simply getting worse. But a ticket is not a direct measurement of bad driving -- it is the product of a driver's behaviour *and* the amount and kind of enforcement directed at that behaviour, and the two are easy to conflate. A rise in tickets can mean more unsafe driving, more officers on the road, a new automated camera, or some mix of the three, and a dataset that only counts tickets cannot separate these explanations at a glance.
 
@@ -69,7 +69,7 @@ The dataset used in this paper contains `r comma(nrow(analysis_data))` rows span
 
 analysis_data |>
   ggplot(aes(x = ticket_count)) +
-  geom_histogram(bins = 50, fill = "#2c7fb8", colour = "white") +
+  geom_histogram(bins = 50, fill = "grey35", colour = "white") +
   scale_x_log10(labels = comma) +
   scale_y_continuous(labels = comma) +
   labs(x = "Tickets recorded in a single row (log scale)", y = "Number of rows") +
@@ -86,7 +86,7 @@ analysis_data |>
   group_by(offence_category) |>
   summarise(tickets = sum(ticket_count), .groups = "drop") |>
   ggplot(aes(x = tickets, y = fct_reorder(offence_category, tickets))) +
-  geom_col(fill = "#2c7fb8") +
+  geom_col(fill = "grey35") +
   scale_x_continuous(labels = comma) +
   labs(x = "Total tickets, 2014-2025", y = NULL) +
   theme_minimal(base_size = 11)
@@ -100,7 +100,7 @@ analysis_data |>
   group_by(division) |>
   summarise(tickets = sum(ticket_count), .groups = "drop") |>
   ggplot(aes(x = tickets, y = fct_reorder(division, tickets))) +
-  geom_col(fill = "#2c7fb8") +
+  geom_col(fill = "grey35") +
   scale_x_continuous(labels = comma) +
   labs(x = "Total tickets, 2014-2025", y = NULL) +
   theme_minimal(base_size = 11)
@@ -114,7 +114,7 @@ analysis_data |>
   group_by(age_group) |>
   summarise(tickets = sum(ticket_count), .groups = "drop") |>
   ggplot(aes(x = tickets, y = fct_reorder(age_group, tickets))) +
-  geom_col(fill = "#2c7fb8") +
+  geom_col(fill = "grey35") +
   scale_x_continuous(labels = comma) +
   labs(x = "Total tickets, 2014-2025", y = NULL) +
   theme_minimal(base_size = 11)
@@ -128,7 +128,7 @@ analysis_data |>
   group_by(ticket_type) |>
   summarise(tickets = sum(ticket_count), .groups = "drop") |>
   ggplot(aes(x = tickets, y = fct_reorder(ticket_type, tickets))) +
-  geom_col(fill = "#2c7fb8") +
+  geom_col(fill = "grey35") +
   scale_x_continuous(labels = comma) +
   labs(x = "Total tickets, 2014-2025", y = NULL) +
   theme_minimal(base_size = 11)
@@ -168,8 +168,8 @@ analysis_data |>
   group_by(offence_year) |>
   summarise(total_tickets = sum(ticket_count), .groups = "drop") |>
   ggplot(aes(x = offence_year, y = total_tickets)) +
-  geom_line(colour = "#2c7fb8", linewidth = 1) +
-  geom_point(colour = "#2c7fb8", size = 2) +
+  geom_line(colour = "grey20", linewidth = 1) +
+  geom_point(colour = "grey20", size = 2) +
   scale_x_continuous(breaks = 2014:2025) +
   scale_y_continuous(labels = comma) +
   labs(x = "Year", y = "Total tickets issued") +
@@ -195,7 +195,7 @@ analysis_data |>
   geom_col(position = "stack") +
   scale_x_continuous(breaks = 2014:2025) +
   scale_y_continuous(labels = percent) +
-  scale_fill_manual(values = c("Behavioural" = "#2c7fb8", "Administrative" = "#c7c7c7")) +
+  scale_fill_grey(start = 0.25, end = 0.75) +
   labs(x = "Year", y = "Share of tickets", fill = "Offence group") +
   theme_minimal(base_size = 11) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
@@ -210,17 +210,25 @@ Breaking the behavioural group into its four individual categories (@fig-categor
 analysis_data |>
   group_by(offence_year, offence_category) |>
   summarise(tickets = sum(ticket_count), .groups = "drop") |>
-  ggplot(aes(x = offence_year, y = tickets, colour = offence_category)) +
-  geom_line(linewidth = 0.9) +
+  ggplot(aes(x = offence_year, y = tickets, linetype = offence_category, shape = offence_category)) +
+  geom_line(colour = "grey20", linewidth = 0.6) +
+  geom_point(colour = "grey20", size = 1.8) +
   scale_x_continuous(breaks = 2014:2025) +
-  scale_y_continuous(labels = comma) +
-  labs(x = "Year", y = "Tickets issued", colour = "Offence category") +
+  scale_y_log10(labels = comma) +
+  scale_shape_manual(values = c(0, 1, 2, 3, 4, 5, 6, 8)) +
+  scale_linetype_manual(values = c(
+    "solid", "22", "42", "44", "13", "1343", "73", "2262"
+  )) +
+  labs(x = "Year", y = "Tickets issued", linetype = "Offence category", shape = "Offence category") +
   theme_minimal(base_size = 11) +
   theme(
     axis.text.x = element_text(angle = 45, hjust = 1),
     legend.position = "bottom"
   ) +
-  guides(colour = guide_legend(nrow = 4))
+  guides(
+    linetype = guide_legend(nrow = 4),
+    shape = guide_legend(nrow = 4)
+  )
 ```
 
 Driver age group is not part of this story: adults account for over 99% of tickets in every year of the data, so the shifts documented above cannot be explained by a changing mix of younger or older drivers.
@@ -240,8 +248,8 @@ analysis_data |>
     .groups = "drop"
   ) |>
   ggplot(aes(x = offence_year, y = nsa_share)) +
-  geom_line(colour = "#d95f0e", linewidth = 1) +
-  geom_point(colour = "#d95f0e", size = 2) +
+  geom_line(colour = "grey20", linewidth = 1) +
+  geom_point(colour = "grey20", size = 2) +
   scale_x_continuous(breaks = 2014:2025) +
   scale_y_continuous(labels = percent, limits = c(0, NA)) +
   labs(x = "Year", y = "Share of tickets with no resolved neighbourhood") +
@@ -300,6 +308,7 @@ analysis_data |>
   )) +
   geom_col() +
   scale_x_continuous(labels = comma) +
+  scale_fill_grey(start = 0.15, end = 0.85) +
   labs(x = "Tickets issued, 2022-2025", y = NULL, fill = "Offence category") +
   theme_minimal(base_size = 11) +
   theme(legend.position = "bottom") +
@@ -327,7 +336,7 @@ This analysis has several limitations. First, and most fundamentally, ticket cou
 
 # Appendix {.unnumbered}
 
-## Summary statistics for ticket count {#sec-appendix-summary}
+## Summary statistics for ticket count {#sec-appendix-summary .unnumbered}
 
 ```{r}
 #| label: tbl-ticket-count-summary
@@ -346,6 +355,6 @@ analysis_data |>
   tt()
 ```
 
-## Data cleaning {#sec-appendix-cleaning}
+## Data cleaning {#sec-appendix-cleaning .unnumbered}
 
 The raw dataset required minimal cleaning: no missing values or duplicate rows were present. `ticket_type` values carried long trailing whitespace in the raw export, which was trimmed and recoded to two short labels ("Part I notice" and "Part III summons"). Two variables were constructed for this analysis: `offence_group`, which splits the eight offence categories into "Behavioural" (Aggressive Driving, Speeding, Distracted Driving, Moving Violations) and "Administrative" (all others); and `period`, which groups years into `pre_2020` (2014-2019), `2020_2021` (excluded from before/after comparisons as a pandemic-affected transition), and `post_2021` (2022-2025). A `has_neighbourhood` flag marks rows where `hood_158` could not be resolved to a specific neighbourhood ("NSA"); these rows were retained throughout rather than dropped, since excluding them would understate total ticket volume, but they are excluded from any neighbourhood-level breakdown.

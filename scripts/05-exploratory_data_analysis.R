@@ -4,7 +4,11 @@
 #   paper's data section. Figures are saved as PNG to
 #   outputs/figures/, and the underlying summarised tables are saved
 #   as CSV to outputs/tables/ so paper.qmd can rebuild the tinytable
-#   objects without re-running this whole script.
+#   objects without re-running this whole script. Styling is
+#   deliberately minimal and grayscale throughout, matching paper.qmd:
+#   the multi-category line plot distinguishes categories by shape and
+#   linetype rather than colour, and both stacked/segmented bar plots
+#   use a grayscale gradient fill rather than arbitrary hues.
 # Author: Bolong
 # Date: 28 September 2026
 # Contact: [add email]
@@ -43,7 +47,7 @@ theme_set(
 
 fig_ticket_count_dist <- analysis_data |>
   ggplot(aes(x = ticket_count)) +
-  geom_histogram(bins = 50, fill = "#2c7fb8", colour = "white") +
+  geom_histogram(bins = 50, fill = "grey35", colour = "white") +
   scale_x_log10(labels = comma) +
   scale_y_continuous(labels = comma) +
   labs(
@@ -77,6 +81,84 @@ write_csv(table_ticket_count_summary, "outputs/tables/table-ticket-count-summary
 tt(table_ticket_count_summary)
 
 
+#### Overview figures: raw distribution across categorical variables ####
+
+fig_category_overview <- analysis_data |>
+  group_by(offence_category) |>
+  summarise(tickets = sum(ticket_count), .groups = "drop") |>
+  ggplot(aes(x = tickets, y = fct_reorder(offence_category, tickets))) +
+  geom_col(fill = "grey35") +
+  scale_x_continuous(labels = comma) +
+  labs(x = "Total tickets, 2014-2025", y = NULL)
+
+ggsave(
+  "outputs/figures/fig-category-overview.png",
+  fig_category_overview,
+  width = 7, height = 4, dpi = 300
+)
+
+fig_division_overview <- analysis_data |>
+  group_by(division) |>
+  summarise(tickets = sum(ticket_count), .groups = "drop") |>
+  ggplot(aes(x = tickets, y = fct_reorder(division, tickets))) +
+  geom_col(fill = "grey35") +
+  scale_x_continuous(labels = comma) +
+  labs(x = "Total tickets, 2014-2025", y = NULL)
+
+ggsave(
+  "outputs/figures/fig-division-overview.png",
+  fig_division_overview,
+  width = 7, height = 4, dpi = 300
+)
+
+fig_age_overview <- analysis_data |>
+  group_by(age_group) |>
+  summarise(tickets = sum(ticket_count), .groups = "drop") |>
+  ggplot(aes(x = tickets, y = fct_reorder(age_group, tickets))) +
+  geom_col(fill = "grey35") +
+  scale_x_continuous(labels = comma) +
+  labs(x = "Total tickets, 2014-2025", y = NULL)
+
+ggsave(
+  "outputs/figures/fig-age-overview.png",
+  fig_age_overview,
+  width = 7, height = 4, dpi = 300
+)
+
+fig_tickettype_overview <- analysis_data |>
+  group_by(ticket_type) |>
+  summarise(tickets = sum(ticket_count), .groups = "drop") |>
+  ggplot(aes(x = tickets, y = fct_reorder(ticket_type, tickets))) +
+  geom_col(fill = "grey35") +
+  scale_x_continuous(labels = comma) +
+  labs(x = "Total tickets, 2014-2025", y = NULL)
+
+ggsave(
+  "outputs/figures/fig-tickettype-overview.png",
+  fig_tickettype_overview,
+  width = 7, height = 4, dpi = 300
+)
+
+
+#### Table: ticket type composition by division ####
+
+table_tickettype_by_division <- analysis_data |>
+  group_by(division) |>
+  summarise(
+    summons_share = sum(ticket_count[ticket_type == "Part III summons"]) / sum(ticket_count),
+    .groups = "drop"
+  ) |>
+  arrange(desc(summons_share)) |>
+  transmute(
+    Division = division,
+    `Share issued as Part III summons` = percent(summons_share, accuracy = 0.1)
+  )
+
+write_csv(table_tickettype_by_division, "outputs/tables/table-tickettype-by-division.csv")
+
+tt(table_tickettype_by_division)
+
+
 #### Figure: total tickets by year ####
 
 yearly_totals <- analysis_data |>
@@ -85,8 +167,8 @@ yearly_totals <- analysis_data |>
 
 fig_yearly_totals <- yearly_totals |>
   ggplot(aes(x = offence_year, y = total_tickets)) +
-  geom_line(colour = "#2c7fb8", linewidth = 1) +
-  geom_point(colour = "#2c7fb8", size = 2) +
+  geom_line(colour = "grey20", linewidth = 1) +
+  geom_point(colour = "grey20", size = 2) +
   scale_x_continuous(breaks = 2014:2025) +
   scale_y_continuous(labels = comma) +
   labs(x = "Year", y = "Total tickets issued", title = NULL) +
@@ -100,6 +182,8 @@ ggsave(
 
 
 #### Figure: behavioural share of tickets by year ####
+# Grayscale gradient fill (not arbitrary colors) distinguishes the two
+# offence groups.
 
 yearly_group_share <- analysis_data |>
   group_by(offence_year, offence_group) |>
@@ -113,7 +197,7 @@ fig_group_share <- yearly_group_share |>
   geom_col(position = "stack") +
   scale_x_continuous(breaks = 2014:2025) +
   scale_y_continuous(labels = percent) +
-  scale_fill_manual(values = c("Behavioural" = "#2c7fb8", "Administrative" = "#c7c7c7")) +
+  scale_fill_grey(start = 0.25, end = 0.75) +
   labs(x = "Year", y = "Share of tickets", fill = "Offence group", title = NULL) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
@@ -125,22 +209,32 @@ ggsave(
 
 
 #### Figure: category trends by year ####
+# Shape and linetype distinguish the eight categories, rather than
+# colour (single grayscale color throughout).
 
 category_trends <- analysis_data |>
   group_by(offence_year, offence_category) |>
   summarise(tickets = sum(ticket_count), .groups = "drop")
 
 fig_category_trends <- category_trends |>
-  ggplot(aes(x = offence_year, y = tickets, colour = offence_category)) +
-  geom_line(linewidth = 0.9) +
+  ggplot(aes(x = offence_year, y = tickets, linetype = offence_category, shape = offence_category)) +
+  geom_line(colour = "grey20", linewidth = 0.6) +
+  geom_point(colour = "grey20", size = 1.8) +
   scale_x_continuous(breaks = 2014:2025) +
   scale_y_continuous(labels = comma) +
-  labs(x = "Year", y = "Tickets issued", colour = "Offence category", title = NULL) +
+  scale_shape_manual(values = c(0, 1, 2, 3, 4, 5, 6, 8)) +
+  scale_linetype_manual(values = c(
+    "solid", "22", "42", "44", "13", "1343", "73", "2262"
+  )) +
+  labs(x = "Year", y = "Tickets issued", linetype = "Offence category", shape = "Offence category", title = NULL) +
   theme(
     axis.text.x = element_text(angle = 45, hjust = 1),
     legend.position = "bottom"
   ) +
-  guides(colour = guide_legend(nrow = 3))
+  guides(
+    linetype = guide_legend(nrow = 3),
+    shape = guide_legend(nrow = 3)
+  )
 
 ggsave(
   "outputs/figures/fig-category-trends.png",
@@ -160,8 +254,8 @@ nsa_share <- analysis_data |>
 
 fig_nsa_share <- nsa_share |>
   ggplot(aes(x = offence_year, y = nsa_share)) +
-  geom_line(colour = "#d95f0e", linewidth = 1) +
-  geom_point(colour = "#d95f0e", size = 2) +
+  geom_line(colour = "grey20", linewidth = 1) +
+  geom_point(colour = "grey20", size = 2) +
   scale_x_continuous(breaks = 2014:2025) +
   scale_y_continuous(labels = percent, limits = c(0, NA)) +
   labs(x = "Year", y = "Share of tickets with no resolved neighbourhood", title = NULL) +
@@ -200,6 +294,8 @@ tt(table_division_change)
 
 
 #### Figure: category mix in the top 10 neighbourhoods, 2022-25 ####
+# Grayscale gradient fill (not arbitrary colors) distinguishes the
+# four behavioural offence categories.
 
 top10_neighbourhoods <- analysis_data |>
   filter(period == "post_2021", offence_group == "Behavioural", has_neighbourhood) |>
@@ -222,6 +318,7 @@ fig_top10_mix <- analysis_data |>
   )) +
   geom_col() +
   scale_x_continuous(labels = comma) +
+  scale_fill_grey(start = 0.15, end = 0.85) +
   labs(
     x = "Tickets issued, 2022-2025", y = NULL,
     fill = "Offence category", title = NULL
@@ -247,12 +344,12 @@ age_share <- analysis_data |>
 
 fig_age_share <- age_share |>
   filter(age_group != "Adult") |>
-  ggplot(aes(x = offence_year, y = share, colour = age_group)) +
-  geom_line(linewidth = 1) +
-  geom_point(size = 2) +
+  ggplot(aes(x = offence_year, y = share, linetype = age_group, shape = age_group)) +
+  geom_line(colour = "grey20", linewidth = 0.8) +
+  geom_point(colour = "grey20", size = 2) +
   scale_x_continuous(breaks = 2014:2025) +
   scale_y_continuous(labels = percent) +
-  labs(x = "Year", y = "Share of tickets", colour = "Age group", title = NULL) +
+  labs(x = "Year", y = "Share of tickets", linetype = "Age group", shape = "Age group", title = NULL) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ggsave(
